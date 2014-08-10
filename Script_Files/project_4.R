@@ -1,0 +1,34 @@
+#project 1 from Coursera Data Analysis class
+library(lubridate)
+
+pD <- read.table("household_power_consumption.txt", sep=";", header=T, dec=".", na.strings="?")
+pD$Date <- dmy(pD$Date)
+pD$Date <- as.Date(pD$Date)
+
+pD$DateTime <- strptime(paste(pD$Date, pD$Time), "%Y-%m-%d %H:%M:%S")
+
+power <- pD[(pD$Date >= "2007-02-01" & pD$Date <= "2007-02-02"),]
+power$Global_active_power <- as.numeric(power$Global_active_power, na.rm=T)
+power$Global_reactive_power <- as.numeric(power$Global_reactive_power, na.rm=T)
+
+#### Plot #4
+par("mar")
+par(mfrow=c(2,2), mar=c(4,4,4,0.5))
+
+plot(power$DateTime, power$Global_active_power, type="l", ylab="Global Active Power")
+
+plot(power$DateTime, power$Voltage, type="l", xlab="datetime", ylab="Voltage")
+
+plot(power$DateTime, power$Sub_metering_1, type="n",col='black',xlab="",
+     ylab= "Global Active Power (kilowatts)")
+points(power$DateTime, power$Sub_metering_1, col="black", type="l")
+points(power$DateTime, power$Sub_metering_2, col="red", type="l")
+points(power$DateTime, power$Sub_metering_3, col="blue", type="l")
+legend("topright",pch="_", col=c("black","red", "blue"), 
+       legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), adj=c(0,0.5), cex=.5)
+
+plot(power$DateTime, power$Global_reactive_power, type="l", xlab="datetime", ylab= "Global_reactive_power")
+
+dev.copy(png, file="plot4.png", width=480, height =480)
+dev.off()
+
